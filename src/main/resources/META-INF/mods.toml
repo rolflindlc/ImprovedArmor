@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="improvedarmor"
+version="${file.jarVersion}"
+displayName="Improved Armor"
+authors="Rolflin"
+description='''Replaces the vanilla armor curve with a flat one: every armor point is worth the same amount of effective health,
+and armor, Resistance and Protection enchantments add up instead of multiplying.
+Works with the armor of any other mod. The optional client HUD shows where your protection comes from.'''
+
+[[dependencies.improvedarmor]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47.2,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.improvedarmor]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
