@@ -42,7 +42,24 @@ The mod only changes the formula, not the items: any armor from any other mod th
 
 * Required on the **server**; the (planned) HUD is client-only and optional.
 * Standalone. [Rolflin's Rites & Paths](https://github.com/rolflindlc/RPGClasses) detects it
-  through a tiny public API (planned) and rescales its own armor values only when it is loaded.
+  through the public API below and routes its "ignore part of the armor" maths through the new curve
+  only when this mod is loaded.
+
+## Public API
+
+`io.github.rolflindlc.improvedarmor.api.ImprovedArmorApi` (static methods, `API_VERSION = 1`):
+
+| Method | Meaning |
+| --- | --- |
+| `isActive()` | The flat curve is on (server config master switch). |
+| `k()` | Curve constant K. |
+| `damageAfterArmor(entity, source, damage[, armorScale])` | Damage left after armor, Resistance and Protection. `armorScale` multiplies the armor attribute to simulate armor piercing. |
+| `effectiveArmor(entity, source)` | Armor points from every source that apply against that damage source. |
+| `reduction(entity, source, damage)` | Reduction in [0, 1) for a hit of that size. |
+| `armorForReduction(r)` | `K * r / (1 - r)`. |
+
+Call it only when `improvedarmor` is loaded, preferably through reflection, so your mod keeps working
+without it.
 
 ## Building
 
@@ -55,10 +72,10 @@ Requires Java 17. The formula lives in `core/` as plain Java with unit tests, so
 
 ## Roadmap
 
-1. Project skeleton and CI.
-2. Armor formula (pure Java) with unit tests.
-3. Mixins and server config.
-4. Public API and `/improvedarmor` breakdown command.
+1. Project skeleton and CI. *(done)*
+2. Armor formula (pure Java) with unit tests. *(done)*
+3. Mixins and server config. *(done)*
+4. Public API *(done)* and `/improvedarmor` breakdown command.
 5. Client HUD: extra rows coloured by armor source.
 6. Item tooltips.
 
