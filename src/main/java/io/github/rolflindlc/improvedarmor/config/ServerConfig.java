@@ -31,7 +31,7 @@ public final class ServerConfig {
         ENABLED = b.comment("Master switch. When false, vanilla armor, Resistance and Protection rules apply.")
                 .define("enabled", true);
         K = b.comment("Curve constant K. Higher means less protection per armor point.",
-                        "Effective health = 1 + A / K, so with K = 22 every 22 armor points add +100% effective health.")
+                        "Effective health = 1 + A / K, so with K = 18 every 18 armor points add +100% effective health.")
                 .defineInRange("k", ArmorParams.DEFAULT_K, 0.1, 1000.0);
         POINTS_PER_EPF = b.comment("Armor points granted by each point of enchantment protection factor (Protection IV on 4 pieces = 16).")
                 .defineInRange("pointsPerEnchantmentProtection", ArmorParams.DEFAULT_POINTS_PER_EPF, 0.0, 10.0);

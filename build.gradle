@@ -45,12 +45,17 @@ mixin {
 
 repositories {
     mavenCentral()
+    // Curios: only to compile the optional bridge (armor from accessories in the HUD).
+    maven { name = "Curios"; url = "https://maven.theillusivec4.top/" }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // Optional: Curios accessories (not needed at runtime).
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 
     // Unit tests only cover core/ (plain Java, no Minecraft classes).
     testImplementation 'junit:junit:4.13.2'

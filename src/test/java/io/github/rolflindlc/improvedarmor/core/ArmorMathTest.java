@@ -26,8 +26,8 @@ public class ArmorMathTest {
 
     @Test
     public void fullDiamondTenDamageHit() {
-        // A = 20, toughness 8: adjusted = 20 - 10 / (2 + 2) = 17.5 -> damage = 10 * 22 / 39.5
-        assertEquals(10.0 * 22.0 / 39.5, ArmorMath.damageAfterArmor(p, 10, 20, 8, 0, 0, true), EPS);
+        // A = 20, toughness 8: adjusted = 20 - 10 / (2 + 2) = 17.5 -> damage = 10 * 18 / 35.5
+        assertEquals(10.0 * 18.0 / 35.5, ArmorMath.damageAfterArmor(p, 10, 20, 8, 0, 0, true), EPS);
     }
 
     @Test
@@ -73,16 +73,16 @@ public class ArmorMathTest {
     public void protectionCountsAsArmorAndIsCapped() {
         // Protection IV on four pieces: 16 EPF * 1.5 = 24 points.
         assertEquals(24.0, ArmorMath.effectiveArmor(p, 0, 16, 0, true), EPS);
-        // Diamond + Protection IV: 20 + 24 = 44 points -> 2/3 reduction against a tiny hit.
-        assertEquals(2.0 / 3.0, ArmorMath.reduction(ArmorMath.effectiveArmor(p, 20, 16, 0, true), p.k()), EPS);
+        // Diamond + Protection IV: 20 + 24 = 44 points -> 44 / 62 (71%) reduction against a tiny hit.
+        assertEquals(44.0 / 62.0, ArmorMath.reduction(ArmorMath.effectiveArmor(p, 20, 16, 0, true), p.k()), EPS);
         // EPF above the cap of 20 does not count (20 * 1.5 = 30).
         assertEquals(30.0, ArmorMath.effectiveArmor(p, 0, 30, 0, true), EPS);
     }
 
     @Test
-    public void resistanceAddsFivePointsPerLevel() {
-        assertEquals(20.0, ArmorMath.effectiveArmor(p, 0, 0, 4, true), EPS);
-        assertEquals(5.0, ArmorMath.effectiveArmor(p, 0, 0, 1, true), EPS);
+    public void resistanceAddsEightPointsPerLevel() {
+        assertEquals(32.0, ArmorMath.effectiveArmor(p, 0, 0, 4, true), EPS);
+        assertEquals(8.0, ArmorMath.effectiveArmor(p, 0, 0, 1, true), EPS);
     }
 
     @Test
