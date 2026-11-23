@@ -40,7 +40,7 @@ The mod only changes the formula, not the items: any armor from any other mod th
 
 ## Compatibility
 
-* Required on the **server**; the (planned) HUD is client-only and optional.
+* Required on the **server**; the HUD is client-only and optional.
 * Standalone. [Rolflin's Rites & Paths](https://github.com/rolflindlc/RPGClasses) detects it
   through the public API below and routes its "ignore part of the armor" maths through the new curve
   only when this mod is loaded.
@@ -70,13 +70,24 @@ without it.
 Requires Java 17. The formula lives in `core/` as plain Java with unit tests, so
 `./gradlew test` does not need Minecraft.
 
+## Armor HUD (client)
+
+With the mod installed on the client, the armor bar shows the **effective armor against a normal hit** (armor,
+Protection and Resistance through the flat curve), and every point is tinted by where it comes from: each worn piece
+(the average color of its texture, one shade per slot, the dye for leather), other armor modifiers (white), each
+Protection-type enchantment and the Resistance effect (its potion color). Up to 3 rows of 20 points are stacked; past
+that the bar collapses into one proportional row with the total next to it.
+
+`config/improvedarmor-client.toml`: `enabled`, `maxRows`, `showNumber` and `colorOverrides`
+(`"minecraft:iron_chestplate=#D8D8D8"`, `"minecraft:protection=#B57CFF"`, `"minecraft:resistance=#9146F0"`).
+
 ## Roadmap
 
 1. Project skeleton and CI. *(done)*
 2. Armor formula (pure Java) with unit tests. *(done)*
 3. Mixins and server config. *(done)*
 4. Public API *(done)* and `/improvedarmor` breakdown command.
-5. Client HUD: extra rows coloured by armor source.
+5. Client HUD: extra rows coloured by armor source. *(done)*
 6. Item tooltips.
 
 ## License
