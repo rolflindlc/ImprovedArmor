@@ -66,7 +66,11 @@ public final class ArmorColors {
         return TEXTURE_CACHE.computeIfAbsent(stack.getItem(), item -> averageTextureColor(stack));
     }
 
-    /** Average color of the opaque pixels of the item's texture, slightly brightened so dark sets stay visible. */
+    /**
+     * Average color of the item texture's opaque pixels, leaving out its border (opaque pixels next to a transparent one
+     * or to the edge of the image), which is usually a dark outline that muddies the color. Thin textures with no inner
+     * pixels fall back to every opaque pixel. Slightly brightened so dark sets stay visible.
+     */
     private static int averageTextureColor(ItemStack stack) {
         Minecraft mc = Minecraft.getInstance();
         try {
@@ -76,25 +80,40 @@ public final class ArmorColors {
             Optional<net.minecraft.server.packs.resources.Resource> res = mc.getResourceManager().getResource(file);
             if (res.isEmpty()) return OTHER;
             try (InputStream in = res.get().open(); NativeImage img = NativeImage.read(in)) {
-                long r = 0, g = 0, b = 0, n = 0;
-                int h = Math.min(img.getHeight(), img.getWidth()); // first frame of animated textures
+                int w = img.getWidth();
+                int h = Math.min(img.getHeight(), w); // first frame of animated textures
+                long[] inner = new long[4];
+                long[] all = new long[4];
                 for (int y = 0; y < h; y++) {
-                    for (int x = 0; x < img.getWidth(); x++) {
+                    for (int x = 0; x < w; x++) {
                         int abgr = img.getPixelRGBA(x, y); // NativeImage stores ABGR
-                        if ((abgr >>> 24) < 128) continue;
-                        r += abgr & 0xFF;
-                        g += (abgr >> 8) & 0xFF;
-                        b += (abgr >> 16) & 0xFF;
-                        n++;
+                        if (!opaque(abgr)) continue;
+                        add(all, abgr);
+                        boolean border = x == 0 || y == 0 || x == w - 1 || y == h - 1
+                                || !opaque(img.getPixelRGBA(x - 1, y)) || !opaque(img.getPixelRGBA(x + 1, y))
+                                || !opaque(img.getPixelRGBA(x, y - 1)) || !opaque(img.getPixelRGBA(x, y + 1));
+                        if (!border) add(inner, abgr);
                     }
                 }
-                if (n == 0) return OTHER;
-                return brighten((int) (r / n), (int) (g / n), (int) (b / n));
+                long[] use = inner[3] > 0 ? inner : all;
+                if (use[3] == 0) return OTHER;
+                return brighten((int) (use[0] / use[3]), (int) (use[1] / use[3]), (int) (use[2] / use[3]));
             }
         } catch (Exception | LinkageError e) {
             ImprovedArmor.LOGGER.debug("Improved Armor: no texture color for {}", stack, e);
             return OTHER;
         }
+    }
+
+    private static boolean opaque(int abgr) {
+        return (abgr >>> 24) >= 128;
+    }
+
+    private static void add(long[] sum, int abgr) {
+        sum[0] += abgr & 0xFF;
+        sum[1] += (abgr >> 8) & 0xFF;
+        sum[2] += (abgr >> 16) & 0xFF;
+        sum[3]++;
     }
 
     /** Scales the color so its brightest channel is at least 0xC0 (the icons are tinted, dark tints look black). */

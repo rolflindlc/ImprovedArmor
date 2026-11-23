@@ -21,9 +21,9 @@ All damage that vanilla reduces with armor goes through this formula instead:
 ```
 A_eff     = armor
           + 1.5 * min(EPF, 20)          # enchantment protection factor that applies to the damage type
-          + 5   * resistance level      # Resistance I = 1, II = 2, ...
+          + 8   * resistance level      # Resistance I = 1, II = 2, ...
 A_eff     = max(A_eff / 5, A_eff - damage / (2 + toughness / 4))   # big-hit penalty (same term as vanilla)
-reduction = A_eff / (A_eff + K)         # K = 22 by default
+reduction = A_eff / (A_eff + K)         # K = 18 by default
 ```
 
 * There is **no cap of 20** and **no multiplicative stacking**: effective health is
@@ -73,13 +73,27 @@ Requires Java 17. The formula lives in `core/` as plain Java with unit tests, so
 ## Armor HUD (client)
 
 With the mod installed on the client, the armor bar shows the **effective armor against a normal hit** (armor,
-Protection and Resistance through the flat curve), and every point is tinted by where it comes from: each worn piece
-(the average color of its texture, one shade per slot, the dye for leather), other armor modifiers (white), each
-Protection-type enchantment and the Resistance effect (its potion color). Up to 3 rows of 20 points are stacked; past
-that the bar collapses into one proportional row with the total next to it.
+Protection and Resistance through the flat curve), and every point shows where it comes from:
+
+| Icon | Source | Color |
+| --- | --- | --- |
+| Armor | each worn piece | average of its texture without the outline (one shade per slot; dye for leather) |
+| Armor (white) | other armor modifiers (classes, other mods) | white |
+| Amulet with gold rim | accessories in Curios slots (optional) | average of the item texture |
+| Enchanted book (moving shine) | Protection-type enchantments | one per enchantment |
+| Potion bottle | Resistance and effects that add armor | the effect's color |
+
+Up to 3 rows of 20 points are stacked; past that the bar collapses into one proportional row with the total next to it.
+
+Above the bar, small icons show the protections that only work against one kind of damage, with the **extra armor
+points** they are worth, highest first, 4 per row: fire, explosions, projectiles and falls (enchantments), and
+Iron's Spellbooks general magic and every school (their percentage resistances converted to the armor points that
+give the same reduction on top of your current armor).
 
 `config/improvedarmor-client.toml`: `enabled`, `maxRows`, `showNumber` and `colorOverrides`
 (`"minecraft:iron_chestplate=#D8D8D8"`, `"minecraft:protection=#B57CFF"`, `"minecraft:resistance=#9146F0"`).
+The icons are in `assets/improvedarmor/textures/gui/hud_icons.png` (layout in `tools/hud_icons.py`), so a resource
+pack can redraw them.
 
 ## Roadmap
 
