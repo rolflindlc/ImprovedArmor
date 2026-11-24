@@ -1,3 +1,27 @@
 {
-  "effect.minecraft.resistance.description": "Reduce el daño recibido como si llevaras 8 puntos de armadura más por nivel (curva plana de Improved Armor). Nivel V o más: inmunidad total."
+  "effect.minecraft.resistance.description": "Reduce el daño recibido como si llevaras 8 puntos de armadura más por nivel (curva plana de Improved Armor). Nivel V o más: inmunidad total.",
+  "attribute.name.improvedarmor.armor_penetration": "Perforación de armadura",
+  "command.improvedarmor.not_living": "%s no tiene armadura.",
+  "command.improvedarmor.header": "Armadura de %s (golpe de ejemplo de %s):",
+  "command.improvedarmor.disabled": "Improved Armor está desactivado en la config del servidor: se usan las reglas vanilla.",
+  "command.improvedarmor.armor": "Armadura: %s (%s) · Dureza: %s",
+  "command.improvedarmor.protection": "Protección: EPF %s → +%s puntos",
+  "command.improvedarmor.resistance": "Resistencia %s → +%s puntos",
+  "command.improvedarmor.total": "Armadura efectiva: %s → quita el %s%% del golpe (vida efectiva ×%s)",
+  "command.improvedarmor.penetration": "Perforación de armadura propia: %s%%",
+  "command.improvedarmor.specific": "Contra %s: +%s puntos → otro %s%% menos de lo que queda",
+  "command.improvedarmor.kind.fire": "fuego",
+  "command.improvedarmor.kind.explosion": "explosiones",
+  "command.improvedarmor.kind.projectile": "proyectiles",
+  "command.improvedarmor.kind.fall": "caídas",
+  "tooltip.improvedarmor.worn": "Te quita el %s%% de un golpe normal",
+  "tooltip.improvedarmor.equip": "Si te la pones: %s%% de reducción de daño",
+  "tooltip.improvedarmor.more": "Mayús: detalles",
+  "tooltip.improvedarmor.armor": "Armadura +%s · Dureza +%s",
+  "tooltip.improvedarmor.enchant": "%s: +%s puntos de armadura",
+  "tooltip.improvedarmor.specific": "Contra %s: +%s puntos (otro %s%% menos tras la defensa general)",
+  "tooltip.improvedarmor.kind.fire": "fuego",
+  "tooltip.improvedarmor.kind.explosion": "explosiones",
+  "tooltip.improvedarmor.kind.projectile": "proyectiles",
+  "tooltip.improvedarmor.kind.fall": "caídas"
 }

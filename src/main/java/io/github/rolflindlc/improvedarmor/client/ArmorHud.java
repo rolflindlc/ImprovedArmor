@@ -108,6 +108,7 @@ public final class ArmorHud {
                 e.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) rm -> ArmorColors.clear()));
         modBus.addListener((ModConfigEvent.Reloading e) -> ArmorColors.clear());
         MinecraftForge.EVENT_BUS.addListener(ArmorHud::onOverlayPre);
+        MinecraftForge.EVENT_BUS.addListener(ArmorTooltips::onTooltip);
     }
 
     private static boolean active() {
@@ -207,32 +208,30 @@ public final class ArmorHud {
         return epf;
     }
 
-    private static double cappedEpf(Player p, DamageSource source, double cap) {
-        return Math.min(cap, epfByEnchantment(p, source).values().stream().mapToDouble(Double::doubleValue).sum());
-    }
-
     // ------------------------------------------------------------------ specific protections
 
-    static List<Specific> specifics(Player p, double currentArmor) {
+    static List<Specific> specifics(Player p) {
         ArmorParams params = ServerConfig.params();
         List<Specific> out = new ArrayList<>();
         var types = p.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        double generic = cappedEpf(p, p.damageSources().generic(), params.maxEpf());
+        // Specific defense (applied after the general one): the EPF that only works against that type, on its own curve.
+        double generic = epfByEnchantment(p, p.damageSources().generic()).values().stream().mapToDouble(Double::doubleValue).sum();
         for (VanillaType t : VANILLA_TYPES) {
             var holder = types.getHolder(t.type());
             if (holder.isEmpty()) continue;
-            double extra = (cappedEpf(p, new DamageSource(holder.get()), params.maxEpf()) - generic) * params.pointsPerEpf();
+            double total = epfByEnchantment(p, new DamageSource(holder.get())).values().stream().mapToDouble(Double::doubleValue).sum();
+            double extra = io.github.rolflindlc.improvedarmor.core.ArmorMath.specificArmor(params, total - Math.min(total, generic));
             if (extra >= 0.5) out.add(new Specific(t.u(), 18, extra));
         }
-        // Iron's Spellbooks: damage multiplier 2 - softcap(resist); converted to the extra armor with the same effect.
-        double base = currentArmor + params.k();
+        // Iron's Spellbooks: damage multiplier 2 - softcap(resist), also applied on its own; shown as the specific
+        // armor points that give the same reduction (K * r / (1 - r)).
         for (String[] row : IRONS) {
             Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("irons_spellbooks", row[0]));
             AttributeInstance inst = attribute == null ? null : p.getAttribute(attribute);
             if (inst == null) continue;
             double multiplier = 2 - ironsSoftCap(inst.getValue());
             if (multiplier >= 1 || multiplier <= 0) continue;
-            double extra = base / multiplier - base;
+            double extra = io.github.rolflindlc.improvedarmor.core.ArmorMath.armorForReduction(1 - multiplier, params.k());
             if (extra >= 0.5) out.add(new Specific(Integer.parseInt(row[1]), Integer.parseInt(row[2]), extra));
         }
         out.sort(Comparator.comparingDouble(Specific::points).reversed());
@@ -262,7 +261,7 @@ public final class ArmorHud {
                 points[i] = sources.get(i).points();
                 sum += Math.max(0, points[i]);
             }
-            specifics = specifics(p, sum);
+            specifics = specifics(p);
         } catch (RuntimeException e) {
             ImprovedArmor.LOGGER.debug("Improved Armor: HUD sources failed", e);
             return;

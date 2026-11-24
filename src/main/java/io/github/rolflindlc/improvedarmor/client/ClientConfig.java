@@ -11,6 +11,7 @@ public final class ClientConfig {
     static final ForgeConfigSpec.BooleanValue HUD_ENABLED;
     static final ForgeConfigSpec.IntValue MAX_ROWS;
     static final ForgeConfigSpec.BooleanValue SHOW_NUMBER;
+    static final ForgeConfigSpec.BooleanValue TOOLTIPS;
     static final ForgeConfigSpec.ConfigValue<List<? extends String>> COLOR_OVERRIDES;
 
     static {
@@ -23,6 +24,8 @@ public final class ClientConfig {
                 .defineInRange("maxRows", 3, 1, 10);
         SHOW_NUMBER = b.comment("Always print the total armor points next to the bar (it is always printed once the bar collapses).")
                 .define("showNumber", false);
+        TOOLTIPS = b.comment("Show on armor pieces how much damage they take away (Shift for details).")
+                .define("tooltips", true);
         COLOR_OVERRIDES = b.comment("Color of armor pieces, enchantments or effects, overriding the automatic one.",
                         "Format: \"<registry id>=#RRGGBB\", e.g. \"minecraft:iron_chestplate=#D8D8D8\",",
                         "\"minecraft:protection=#B57CFF\" (enchantment) or \"minecraft:resistance=#9146F0\" (effect).")

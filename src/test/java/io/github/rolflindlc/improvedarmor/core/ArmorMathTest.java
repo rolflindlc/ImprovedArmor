@@ -148,6 +148,35 @@ public class ArmorMathTest {
         assertRejected(22, 1.5, 5, 20, 20, -1);
     }
 
+    @Test
+    public void specificDefenseAppliesAfterTheGeneralOne() {
+        // Diamond (20) + Fire Protection IV (specific EPF 8 -> 12 points), 10 fire damage, no toughness.
+        // General: adjusted = 20 - 10 / 2 = 15 -> 10 * 18 / 33; specific: 12 / (12 + 18) = 40 % of the rest.
+        double expected = 10.0 * 18.0 / 33.0 * (1.0 - 12.0 / 30.0);
+        assertEquals(expected, ArmorMath.damageAfterArmor(p, 10, 20, 0, 0, 8, 0, true), EPS);
+    }
+
+    @Test
+    public void specificDefenseIsNotPenalisedByBigHits() {
+        // Only specific protection: the big-hit penalty is for the general step.
+        double small = ArmorMath.damageAfterArmor(p, 1, 0, 0, 0, 8, 0, true) / 1.0;
+        double big = ArmorMath.damageAfterArmor(p, 100, 0, 0, 0, 8, 0, true) / 100.0;
+        assertEquals(small, big, EPS);
+    }
+
+    @Test
+    public void specificEpfIsCappedOnItsOwn() {
+        double capped = ArmorMath.specificArmor(p, p.maxEpf());
+        assertEquals(capped, ArmorMath.specificArmor(p, p.maxEpf() + 50), EPS);
+        assertEquals(0.0, ArmorMath.specificArmor(p, -3), EPS);
+    }
+
+    @Test
+    public void noSpecificDefenseMatchesTheGeneralStep() {
+        assertEquals(ArmorMath.damageAfterArmor(p, 7, 15, 2, 4, 1, true),
+                ArmorMath.damageAfterArmor(p, 7, 15, 2, 4, 0, 1, true), EPS);
+    }
+
     private static void assertRejected(double k, double epf, double res, double maxEpf, double cap, int immune) {
         try {
             new ArmorParams(k, epf, res, maxEpf, cap, immune);

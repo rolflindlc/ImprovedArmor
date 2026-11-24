@@ -45,7 +45,7 @@ public final class ImprovedArmorApi {
         return ArmorHooks.damageAfterArmor(entity, source, damage, 1.0);
     }
 
-    /** Armor points from every source (attribute, Protection, Resistance) that apply against this source. */
+    /** General armor points (attribute, Protection, Resistance) that apply against this source. */
     public static double effectiveArmor(LivingEntity entity, DamageSource source) {
         return ArmorHooks.effectiveArmor(entity, source);
     }
@@ -56,6 +56,24 @@ public final class ImprovedArmorApi {
             return 0.0;
         }
         return 1.0 - ArmorHooks.damageAfterArmor(entity, source, damage, 1.0) / damage;
+    }
+
+    /** Specific armor points of the entity against this source (applied after the general step). */
+    public static double specificArmor(LivingEntity entity, DamageSource source) {
+        return ArmorHooks.specificArmor(entity, source);
+    }
+
+    /**
+     * The {@code improvedarmor:armor_penetration} attribute (0 to 1: fraction of the target's armor points ignored).
+     * Add modifiers to it to give penetration to a weapon, a mob or a class.
+     */
+    public static net.minecraft.world.entity.ai.attributes.Attribute armorPenetrationAttribute() {
+        return io.github.rolflindlc.improvedarmor.registry.ModAttributes.ARMOR_PENETRATION.get();
+    }
+
+    /** Current armor penetration of the entity in [0, 1]. */
+    public static double armorPenetration(LivingEntity entity) {
+        return io.github.rolflindlc.improvedarmor.registry.ModAttributes.penetration(entity);
     }
 
     /** Armor points that give a reduction {@code r} in [0, 1) against small hits: {@code K * r / (1 - r)}. */
