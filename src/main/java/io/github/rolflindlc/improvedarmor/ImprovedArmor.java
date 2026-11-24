@@ -3,6 +3,9 @@ package io.github.rolflindlc.improvedarmor;
 import com.mojang.logging.LogUtils;
 import io.github.rolflindlc.improvedarmor.config.ServerConfig;
 import io.github.rolflindlc.improvedarmor.client.ArmorHud;
+import io.github.rolflindlc.improvedarmor.command.ArmorCommand;
+import io.github.rolflindlc.improvedarmor.registry.ModAttributes;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.IExtensionPoint;
@@ -27,6 +30,8 @@ public class ImprovedArmor {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
         modBus.addListener(ServerConfig::onLoad);
         modBus.addListener(ServerConfig::onReload);
+        ModAttributes.register(modBus);
+        MinecraftForge.EVENT_BUS.addListener(ArmorCommand::register);
 
         // The damage maths only runs on the server, so clients without the mod may join; clients that
         // have it get the (optional) HUD. Accept any remote version in both directions.

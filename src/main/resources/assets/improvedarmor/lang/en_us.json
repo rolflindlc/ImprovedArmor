@@ -1,3 +1,27 @@
 {
-  "effect.minecraft.resistance.description": "Reduces damage taken as if you wore 8 more armor points per level (Improved Armor's flat curve). Level V or higher: full immunity."
+  "effect.minecraft.resistance.description": "Reduces damage taken as if you wore 8 more armor points per level (Improved Armor's flat curve). Level V or higher: full immunity.",
+  "attribute.name.improvedarmor.armor_penetration": "Armor Penetration",
+  "command.improvedarmor.not_living": "%s has no armor.",
+  "command.improvedarmor.header": "Armor of %s (example hit of %s):",
+  "command.improvedarmor.disabled": "Improved Armor is turned off in the server config: vanilla rules apply.",
+  "command.improvedarmor.armor": "Armor: %s (%s) · Toughness: %s",
+  "command.improvedarmor.protection": "Protection: EPF %s → +%s points",
+  "command.improvedarmor.resistance": "Resistance %s → +%s points",
+  "command.improvedarmor.total": "Effective armor: %s → takes away %s%% of the hit (effective health ×%s)",
+  "command.improvedarmor.penetration": "Own armor penetration: %s%%",
+  "command.improvedarmor.specific": "Against %s: +%s points → another %s%% off the rest",
+  "command.improvedarmor.kind.fire": "fire",
+  "command.improvedarmor.kind.explosion": "explosions",
+  "command.improvedarmor.kind.projectile": "projectiles",
+  "command.improvedarmor.kind.fall": "falls",
+  "tooltip.improvedarmor.worn": "Takes away %s%% of an ordinary hit for you",
+  "tooltip.improvedarmor.equip": "If you wear it: %s%% damage reduction",
+  "tooltip.improvedarmor.more": "Shift: details",
+  "tooltip.improvedarmor.armor": "Armor +%s · Toughness +%s",
+  "tooltip.improvedarmor.enchant": "%s: +%s armor points",
+  "tooltip.improvedarmor.specific": "Against %s: +%s points (another %s%% off after the general defense)",
+  "tooltip.improvedarmor.kind.fire": "fire",
+  "tooltip.improvedarmor.kind.explosion": "explosions",
+  "tooltip.improvedarmor.kind.projectile": "projectiles",
+  "tooltip.improvedarmor.kind.fall": "falls"
 }

@@ -3,13 +3,18 @@ package io.github.rolflindlc.improvedarmor.core;
 /**
  * The flat armor curve. Plain Java with no Minecraft classes.
  *
+ * <p>Two steps: the <b>general</b> defense (armor, Protection and Resistance, which work against every hit) and then,
+ * on the damage that is left, the <b>specific</b> defense against that damage type (Fire/Blast/Projectile
+ * Protection, Feather Falling...), with the same curve:
+ *
  * <pre>
- * A_eff     = armor + pointsPerEpf * min(EPF, maxEpf) + pointsPerResistance * resistanceLevel
- * A_eff     = max(A_eff / 5, A_eff - damage / (2 + toughness / 4))     (big-hit penalty, as in vanilla)
- * reduction = A_eff / (A_eff + K)
+ * A_gen     = armor * (1 - penetration) + pointsPerEpf * min(generalEPF, maxEpf) + pointsPerResistance * resistanceLevel
+ * A_gen     = max(A_gen / 5, A_gen - damage / (2 + toughness / 4))     (big-hit penalty, as in vanilla)
+ * A_spec    = pointsPerEpf * min(specificEPF, maxEpf)
+ * damage'   = damage * (1 - A_gen / (A_gen + K)) * (1 - A_spec / (A_spec + K))
  * </pre>
  *
- * Effective health is {@code 1 / (1 - reduction) = 1 + A_eff / K}, i.e. linear in armor.
+ * Effective health of each step is {@code 1 + A / K}, i.e. linear in armor; the two steps multiply.
  */
 public final class ArmorMath {
     private ArmorMath() {
@@ -65,13 +70,38 @@ public final class ArmorMath {
         return k * r / (1.0 - r);
     }
 
+    /** Armor points of the specific defense (Protection that only works against this damage type). */
+    public static double specificArmor(ArmorParams p, double specificEpf) {
+        return Math.min(Math.max(sane(specificEpf), 0.0), p.maxEpf()) * p.pointsPerEpf();
+    }
+
     /**
-     * Damage left after armor, Resistance and enchantments for one hit.
+     * Damage left after both steps for one hit.
+     *
+     * @param damage            incoming damage
+     * @param armor             armor attribute value (already reduced by the attacker's penetration)
+     * @param toughness         armor toughness attribute value
+     * @param generalEpf        enchantment protection factor that works against every hit (Protection)
+     * @param specificEpf       extra enchantment protection factor that only works against this damage type
+     * @param resistanceLevel   Resistance level (amplifier + 1), 0 if none
+     * @param player            whether the victim is a player
+     */
+    public static double damageAfterArmor(ArmorParams p, double damage, double armor, double toughness,
+                                          double generalEpf, double specificEpf, int resistanceLevel, boolean player) {
+        double afterGeneral = damageAfterArmor(p, damage, armor, toughness, generalEpf, resistanceLevel, player);
+        if (!(afterGeneral > 0.0)) {
+            return afterGeneral;
+        }
+        return afterGeneral * (1.0 - reduction(specificArmor(p, specificEpf), p.k()));
+    }
+
+    /**
+     * Damage left after the general step only (armor, Resistance and general Protection) for one hit.
      *
      * @param damage            incoming damage (already past absorption-independent modifiers)
      * @param armor             armor attribute value
      * @param toughness         armor toughness attribute value
-     * @param epf               enchantment protection factor that applies to this damage type
+     * @param epf               general enchantment protection factor
      * @param resistanceLevel   Resistance level (amplifier + 1), 0 if none
      * @param player            whether the victim is a player
      */
