@@ -23,7 +23,7 @@ public record ArmorParams(
     public static final double DEFAULT_POINTS_PER_EPF = 1.5;
     public static final double DEFAULT_POINTS_PER_RESISTANCE = 8.0;
     public static final double DEFAULT_MAX_EPF = 20.0;
-    public static final double DEFAULT_NON_PLAYER_ARMOR_CAP = 20.0;
+    public static final double DEFAULT_NON_PLAYER_ARMOR_CAP = 30.0;
     public static final int DEFAULT_IMMUNE_RESISTANCE_LEVEL = 5;
 
     public ArmorParams {
@@ -36,7 +36,7 @@ public record ArmorParams(
         }
     }
 
-    /** The values chosen in the design: K = 18, 1.5 points per EPF, 8 per Resistance level, mob cap 20. */
+    /** The values chosen in the design: K = 18, 1.5 points per EPF, 8 per Resistance level, mob cap 30. */
     public static ArmorParams defaults() {
         return new ArmorParams(DEFAULT_K, DEFAULT_POINTS_PER_EPF, DEFAULT_POINTS_PER_RESISTANCE,
                 DEFAULT_MAX_EPF, DEFAULT_NON_PLAYER_ARMOR_CAP, DEFAULT_IMMUNE_RESISTANCE_LEVEL);

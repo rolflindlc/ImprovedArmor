@@ -100,7 +100,7 @@ public class ArmorMathTest {
 
     @Test
     public void nonPlayersAreCappedPlayersAreNot() {
-        assertEquals(20.0, ArmorMath.effectiveArmor(p, 50, 0, 0, false), EPS);
+        assertEquals(30.0, ArmorMath.effectiveArmor(p, 50, 0, 0, false), EPS);
         assertEquals(50.0, ArmorMath.effectiveArmor(p, 50, 0, 0, true), EPS);
     }
 
@@ -184,5 +184,19 @@ public class ArmorMathTest {
         } catch (IllegalArgumentException expected) {
             // ok
         }
+    }
+
+    @Test
+    public void bigHitPenaltyOnlyWearsDownArmorPoints() {
+        // Diamond (20/8) + Protection IV (EPF 16 -> 24 points), 15 damage: armor 20 - 15 / 4 = 16.25, plus 24 = 40.25.
+        assertEquals(40.25, ArmorMath.generalArmorAgainstHit(p, 15, 20, 8, 16, 0, true), EPS);
+        // Resistance II alone (16 points) is not weakened by a huge hit.
+        assertEquals(16.0, ArmorMath.generalArmorAgainstHit(p, 1000, 0, 0, 0, 2, true), EPS);
+        assertEquals(15.0 * 18.0 / 58.25, ArmorMath.damageAfterArmor(p, 15, 20, 8, 16, 0, true), EPS);
+    }
+
+    @Test
+    public void nonPlayerCapAppliesAfterThePenalty() {
+        assertEquals(30.0, ArmorMath.generalArmorAgainstHit(p, 1, 50, 0, 20, 0, false), EPS);
     }
 }

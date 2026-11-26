@@ -20,10 +20,11 @@ All damage that vanilla reduces with armor goes through this formula instead, in
 
 ```
 # 1. General defense (works against every hit)
-A_gen     = armor * (1 - attacker's armor penetration)
+A_armor   = armor * (1 - attacker's armor penetration)
+A_armor   = max(A_armor / 5, A_armor - damage / (2 + toughness / 4))  # big-hit penalty (vanilla term, armor only)
+A_gen     = A_armor
           + 1.5 * min(general EPF, 20)  # Protection
           + 8   * resistance level      # Resistance I = 1, II = 2, ...
-A_gen     = max(A_gen / 5, A_gen - damage / (2 + toughness / 4))   # big-hit penalty (same term as vanilla)
 damage'   = damage * (1 - A_gen / (A_gen + K))                      # K = 18 by default
 
 # 2. Specific defense (only against that damage type), on what is left
@@ -36,12 +37,13 @@ damage''  = damage' * (1 - A_spec / (A_spec + K))
 * **Armor penetration** (`improvedarmor:armor_penetration`, 0 to 1) ignores that fraction of the target's armor
   points; Protection and Resistance still count in full. Nothing has it by default: other mods, commands and the API
   give it.
-* **Toughness** keeps its vanilla meaning: it softens the big-hit penalty.
+* **Toughness** keeps its vanilla meaning: it softens the big-hit penalty. The penalty only wears down armor points,
+  as in vanilla; Protection and Resistance keep their full value against big hits.
 * **Resistance V (or higher)** still makes the entity immune, as in vanilla.
 * Damage types tagged `bypasses_armor`, `bypasses_resistance` and `bypasses_enchantments`
   are still ignored by the matching layer. Absorption and armor durability are untouched.
 * **Non-player entities** (mobs, bosses) have a configurable cap on their effective armor
-  (20 by default), so heavily armored bosses do not become much tougher than they are today.
+  (30 by default), so heavily armored bosses do not become much tougher than they are today.
 
 The mod only changes the formula, not the items: any armor from any other mod that uses the
 `generic.armor` / `generic.armor_toughness` attributes works out of the box.
