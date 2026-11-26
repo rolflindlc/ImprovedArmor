@@ -8,8 +8,9 @@ package io.github.rolflindlc.improvedarmor.core;
  * Protection, Feather Falling...), with the same curve:
  *
  * <pre>
- * A_gen     = armor * (1 - penetration) + pointsPerEpf * min(generalEPF, maxEpf) + pointsPerResistance * resistanceLevel
- * A_gen     = max(A_gen / 5, A_gen - damage / (2 + toughness / 4))     (big-hit penalty, as in vanilla)
+ * A_armor   = armor * (1 - penetration)
+ * A_armor   = max(A_armor / 5, A_armor - damage / (2 + toughness / 4))   (big-hit penalty, as in vanilla: armor points only)
+ * A_gen     = A_armor + pointsPerEpf * min(generalEPF, maxEpf) + pointsPerResistance * resistanceLevel
  * A_spec    = pointsPerEpf * min(specificEPF, maxEpf)
  * damage'   = damage * (1 - A_gen / (A_gen + K)) * (1 - A_spec / (A_spec + K))
  * </pre>
@@ -113,9 +114,21 @@ public final class ArmorMath {
         if (p.immuneResistanceLevel() > 0 && resistanceLevel >= p.immuneResistanceLevel()) {
             return 0.0;
         }
-        double a = effectiveArmor(p, armor, epf, resistanceLevel, player);
-        double adjusted = bigHitAdjusted(a, damage, toughness);
-        return damage * (1.0 - reduction(adjusted, p.k()));
+        return damage * (1.0 - reduction(generalArmorAgainstHit(p, damage, armor, toughness, epf, resistanceLevel, player), p.k()));
+    }
+
+    /**
+     * General armor points that apply against one hit. The big-hit penalty only wears down the armor points: it is
+     * vanilla's armor rule, so Protection and Resistance (which vanilla applied in a separate step that big hits did not
+     * weaken) keep their full value. Negative armor is not penalised, it still offsets the other sources.
+     */
+    public static double generalArmorAgainstHit(ArmorParams p, double damage, double armor, double toughness,
+                                                double epf, int resistanceLevel, boolean player) {
+        double a = sane(armor);
+        double armorPart = a > 0.0 ? bigHitAdjusted(a, damage, toughness) : a;
+        double bonus = effectiveArmor(p, 0.0, epf, resistanceLevel, true);
+        double total = Math.max(armorPart + bonus, 0.0);
+        return player ? total : Math.min(total, p.nonPlayerArmorCap());
     }
 
     /** NaN and infinities count as 0 so a broken attribute can never produce NaN damage. */
